@@ -124,6 +124,7 @@ export default {
       if (selectIndex === groupListLength - 1) {
         // 최종 선택된 값들 콘솔로 나타냄
         console.log([...selectOptions.value, e.target.value]);
+        selectOptions.value = [];
 
         // groupList 초기화
         groupList.value = cloneDeep(store.getters.getGroupList);
