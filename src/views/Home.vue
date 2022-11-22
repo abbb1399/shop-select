@@ -50,7 +50,7 @@ export default {
     const store = useStore();
     const groupList = ref([]);
     const optionTag = ref(null);
-    const endResults = ref([]);
+    const selectOptions = ref([]);
     const loadingStatus = ref(false);
 
     const newGroupList = computed(() => {
@@ -123,7 +123,7 @@ export default {
       // 마지막 Select Tag 선택 시
       if (selectIndex === groupListLength - 1) {
         // 최종 선택된 값들 콘솔로 나타냄
-        console.log([...endResults.value, e.target.value]);
+        console.log([...selectOptions.value, e.target.value]);
 
         // groupList 초기화
         groupList.value = cloneDeep(store.getters.getGroupList);
@@ -136,35 +136,35 @@ export default {
       // select태그 값을 선택하면, 그다음(selecetedIndex + 1) select태그가 열리게 (disabled를 false로)
       groupList.value[selectIndex + 1].selectDisabled = false;
 
+      // 선택된 값들을 이리저리 바꿀경우 selected 처리
       const num = optionTag.value.findIndex(
         (el) => el.value === groupList.value[selectIndex + 1].title
       );
       optionTag.value[num].selected = true;
 
+      // 선택된 값들을 이리저리 바꿀경우 데이터 초기화 처리
       groupList.value[selectIndex + 1].options = [
         { item: titleList.value[selectIndex + 1] },
         ...store.getters.getGroupList[selectIndex + 1].options,
       ];
 
-      if (selectIndex !== groupListLength - 2) {
-        groupList.value[groupListLength - 1].selectDisabled = true;
-        groupList.value[groupListLength - 1].options = [
-          { item: titleList.value[groupListLength - 1] },
-          ...store.getters.getGroupList[selectIndex + 1].options,
-        ];
+      // 선택된값 배열
+      selectOptions.value[selectIndex] = e.target.value;
+
+      // 선택된 값들을 이리저리 바꿀경우 disabled 처리 및 선택된값 배열 수정
+      if (selectOptions.value.length - 1 !== selectIndex) {
+        for (
+          let index = groupListLength - 1;
+          index > selectIndex + 1;
+          index--
+        ) {
+          groupList.value[index].selectDisabled = true;
+          selectOptions.value.splice(index - 1, 1);
+        }
       }
 
-      // 그동안 선택한 selected 값 배열
-      const selectedOptionsArray = optionTag.value
-        .filter((el) => el.selected && !el.disabled)
-        .map((option) => {
-          return option.value;
-        });
-
-      endResults.value = selectedOptionsArray;
-
       // 다음 Select(index+1) 데이터 세팅
-      setData(selectIndex + 1, selectedOptionsArray);
+      setData(selectIndex + 1, selectOptions.value);
     };
 
     const getData = async () => {
