@@ -1,5 +1,3 @@
-# YOLO
-
 src/views/Home.vue 에서 코드를 확인할 수 있습니다. 결과값은 console.log로 출력하였습니다.<br>
 
 src/store/item/actions.js 에서 api주소를 바꿀수 있습니다.
